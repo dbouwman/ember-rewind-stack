@@ -1,12 +1,12 @@
 {
   "name": "ember-rewind-stack",
-  "version": "0.0.0",
-  "description": "The default blueprint for ember-cli addons.",
+  "version": "1.0.0",
+  "description": "Central rewind stack for Ember apps that work with chatty APIs.",
   "keywords": [
     "ember-addon"
   ],
   "license": "MIT",
-  "author": "",
+  "author": "Dave Bouwman <dave@davebouwman.com>",
   "directories": {
     "doc": "doc",
     "test": "tests"
