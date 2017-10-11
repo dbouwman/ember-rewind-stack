@@ -83,7 +83,7 @@ export default Ember.Service.extend({
   getCompleted (stackName) {
     let stacks = this.get('stacks');
     if (stacks[stackName]) {
-      return stacks[stackName].completed.reverse;
+      return stacks[stackName].completed.reverse();
     } else {
       throw new Error(`Stack with name ${stackName} not found.`);
     }
