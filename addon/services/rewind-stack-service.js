@@ -4,12 +4,34 @@ import Ember from 'ember';
  */
 export default Ember.Service.extend({
   stacks: {},
+
+  /**
+   * Internalize deep clone so we can remove Ember.copy
+   */
+  cloneObject (obj) {
+    let clone = {};
+     // first check array
+     if (Array.isArray(obj)) {
+       clone = obj.map(this.cloneObject);
+     } else if (typeof obj === "object") {
+       for (const i in obj) {
+         if (obj[i] != null && typeof obj[i] === "object") {
+           clone[i] = this.cloneObject(obj[i]);
+         } else {
+           clone[i] = obj[i];
+         }
+       }
+     } else {
+       clone = obj;
+     }
+     return clone;
+  },
   /**
    * Add an operation to a named stack
    */
   addOperation (stackName, operation) {
     let stacks = this.get('stacks');
-    let opClone = Ember.copy(operation, true);
+    let opClone = this.cloneObject(operation, true);
     opClone.startedAt = new Date().getTime();
     // if we don't have a stack with this name, create one
     if (!stacks[stackName]) {
@@ -22,7 +44,7 @@ export default Ember.Service.extend({
       let activeStack = stacks[stackName];
       if (activeStack.current) {
         activeStack.current.completedAt = new Date().getTime();
-        activeStack.completed.push(Ember.copy(activeStack.current, true));
+        activeStack.completed.push(this.cloneObject(activeStack.current, true));
       }
       activeStack.current = opClone;
     }
