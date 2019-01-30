@@ -29,27 +29,6 @@ export default Ember.Service.extend({
   stacks: {},
 
   /**
-   * Internalize deep clone so we can remove Ember.copy
-   */
-  cloneObject (obj) {
-    let clone = {};
-     // first check array
-     if (Array.isArray(obj)) {
-       clone = obj.map(cloneObject);
-     } else if (typeof obj === "object") {
-       for (const i in obj) {
-         if (obj[i] != null && typeof obj[i] === "object") {
-           clone[i] = cloneObject(obj[i]);
-         } else {
-           clone[i] = obj[i];
-         }
-       }
-     } else {
-       clone = obj;
-     }
-     return clone;
-  },
-  /**
    * Add an operation to a named stack
    */
   addOperation (stackName, operation) {
