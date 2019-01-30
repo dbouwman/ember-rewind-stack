@@ -1,7 +1,30 @@
 import Ember from 'ember';
 /**
+ * Internalize deep clone so we can remove Ember.copy
+ * while not pulling in more dependencies
+ */
+function cloneObject(obj) {
+ let clone = {};
+  // first check array
+  if (Array.isArray(obj)) {
+    clone = obj.map(cloneObject);
+  } else if (typeof obj === "object") {
+    for (const i in obj) {
+      if (obj[i] != null && typeof obj[i] === "object") {
+        clone[i] = cloneObject(obj[i]);
+      } else {
+        clone[i] = obj[i];
+      }
+    }
+  } else {
+    clone = obj;
+  }
+  return clone;
+}
+/**
  * Hold a stack of task steps allowing us to rewind when things go boom...
  */
+
 export default Ember.Service.extend({
   stacks: {},
 
@@ -12,11 +35,11 @@ export default Ember.Service.extend({
     let clone = {};
      // first check array
      if (Array.isArray(obj)) {
-       clone = obj.map(this.cloneObject);
+       clone = obj.map(cloneObject);
      } else if (typeof obj === "object") {
        for (const i in obj) {
          if (obj[i] != null && typeof obj[i] === "object") {
-           clone[i] = this.cloneObject(obj[i]);
+           clone[i] = cloneObject(obj[i]);
          } else {
            clone[i] = obj[i];
          }
@@ -31,7 +54,7 @@ export default Ember.Service.extend({
    */
   addOperation (stackName, operation) {
     let stacks = this.get('stacks');
-    let opClone = this.cloneObject(operation, true);
+    let opClone = cloneObject(operation, true);
     opClone.startedAt = new Date().getTime();
     // if we don't have a stack with this name, create one
     if (!stacks[stackName]) {
@@ -44,7 +67,7 @@ export default Ember.Service.extend({
       let activeStack = stacks[stackName];
       if (activeStack.current) {
         activeStack.current.completedAt = new Date().getTime();
-        activeStack.completed.push(this.cloneObject(activeStack.current, true));
+        activeStack.completed.push(cloneObject(activeStack.current, true));
       }
       activeStack.current = opClone;
     }
